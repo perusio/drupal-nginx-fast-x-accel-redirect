@@ -1,0 +1,99 @@
+<?php
+/**
+ * @file   nginx_accel_redirect.module
+ * @author António P. P. Almeida <appa@perusio.net>
+ * @date   Wed Feb 23 00:18:59 2011
+ * 
+ * @brief Module that implements accelerated private file transfers for Nginx.
+ * 
+ * 
+ */
+
+
+/**
+ * Implementation of hook_menu_alter().
+ * Overriding the default system/files menu handler.
+ */
+function nginx_accel_redirect_menu_alter(&$items) {
+  $items['system/files']['page callback'] = 'nginx_accel_redirect_file_transfer';
+} // nginx_accel_redirect_menu_alter
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function nginx_accel_redirect_menu() {
+  $items = array();
+
+  $items['admin/settings/file-system/nginx-accel-redirect'] = array(
+    'title' => 'X-Accel-Redirect File Settings',
+    'description' => 'Control how files are transferred when using private files.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('nginx_accel_redirect_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+  return $items;
+} // nginx_accel_redirect_menu
+
+
+/**
+ * Transfering a private file using the X-Accel-Redirect facility.
+ * Mosty stolen from file_download().
+ * @see file_download()
+ */
+function nginx_accel_redirect_file_transfer() {
+
+  $args = func_get_args();
+  
+  if (!variable_get('nginx_accel_redirect_transfer', FALSE)) {
+    call_user_func_array('file_download', $args);
+    exit();
+  }
+
+  // Merge the remaining arguments from GET['q'], into relative file path.
+  $filepath = implode('/', $args);
+
+  if (file_exists(file_create_path($filepath))) {
+    $headers = module_invoke_all('file_download', $filepath);
+    if (in_array(-1, $headers)) {
+      return drupal_access_denied();
+    }
+    if (count($headers)) {
+      foreach ($headers as $header) {
+        // To prevent HTTP header injection, we delete new lines that are
+        // not followed by a space or a tab.
+        // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
+        $header = preg_replace('/\r?\n(?!\t| )/', '', $header);
+        drupal_set_header($header);
+      }
+      header('X-Accel-Redirect: '. realpath(file_create_path($filepath)));
+      exit();
+    }
+  }
+  return drupal_not_found();
+} // nginx_accel_redirect_file_transfer
+
+
+/**
+ * The module settings form.
+ */
+function nginx_accel_redirect_admin_settings() {
+  $form = array();
+
+  $form['fast_file_transfer'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Fast private file transfer for Nginx',
+    '#collapsible' => TRUE,
+  );
+  $form['fast_file_transfer']['nginx_accel_redirect_transfer'] = array(
+    '#type' => 'radios',
+    '#title' => 'Nginx_Accel_Redirect private file transfer support',
+    '#default_value' => variable_get('nginx_accel_redirect_transfer', FALSE),
+    '#options' => array(
+      FALSE => t('Files transfered by PHP'),
+      TRUE => t('Files transferred by Nginx using X-Accel-Redirect')),
+    '#description' => 'Enable X-Accel-Redirect support.'
+  );
+    
+  return system_settings_form($form);
+} // nginx_accel_redirect_admin_settings

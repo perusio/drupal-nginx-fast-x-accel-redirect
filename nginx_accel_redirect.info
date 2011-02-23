@@ -1,0 +1,13 @@
+; $Id$
+name = Nginx Accel Redirect 
+description = Enables Nginx fast private file transfer.
+package = File System 
+version = 6.x-1.0
+core = 6.x
+php = 5.2
+
+
+;;; Local Variables:
+;;; mode: conf
+;;; coding: utf-8
+;;; End:

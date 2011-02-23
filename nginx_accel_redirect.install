@@ -1,0 +1,19 @@
+<?php
+/**
+ * @file   nginx_accel_redirect.install
+ * @author António P. P. Almeida <appa@perusio.net>
+ * @date   Wed Feb 23 00:19:31 2011
+ * 
+ * @brief  Install file for the nginx_accel_redirect module.
+ * 
+ * 
+ */
+
+
+/**
+ * Implement hook_uninstall().
+ */
+function nginx_accel_redirect_uninstall() {
+  // Remove no longer needed variables.
+  variable_del('nginx_accel_redirect_transfer');
+}
