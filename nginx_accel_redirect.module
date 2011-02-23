@@ -87,7 +87,7 @@ function nginx_accel_redirect_admin_settings() {
   );
   $form['fast_file_transfer']['nginx_accel_redirect_transfer'] = array(
     '#type' => 'radios',
-    '#title' => 'Nginx_Accel_Redirect private file transfer support',
+    '#title' => 'X-Accel-Redirect: fast private file transfer support for Nginx',
     '#default_value' => variable_get('nginx_accel_redirect_transfer', 0),
     '#options' => array(
       t('Files transfered by PHP'),
