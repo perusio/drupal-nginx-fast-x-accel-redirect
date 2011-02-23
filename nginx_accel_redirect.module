@@ -45,7 +45,7 @@ function nginx_accel_redirect_file_transfer() {
 
   $args = func_get_args();
   
-  if (!variable_get('nginx_accel_redirect_transfer', FALSE)) {
+  if (!variable_get('nginx_accel_redirect_transfer', 0)) {
     call_user_func_array('file_download', $args);
     exit();
   }
@@ -88,10 +88,10 @@ function nginx_accel_redirect_admin_settings() {
   $form['fast_file_transfer']['nginx_accel_redirect_transfer'] = array(
     '#type' => 'radios',
     '#title' => 'Nginx_Accel_Redirect private file transfer support',
-    '#default_value' => variable_get('nginx_accel_redirect_transfer', FALSE),
+    '#default_value' => variable_get('nginx_accel_redirect_transfer', 0),
     '#options' => array(
-      FALSE => t('Files transfered by PHP'),
-      TRUE => t('Files transferred by Nginx using X-Accel-Redirect')),
+      t('Files transfered by PHP'),
+      t('Files transferred by Nginx using X-Accel-Redirect')),
     '#description' => 'Enable X-Accel-Redirect support.'
   );
     
