@@ -114,10 +114,13 @@ Nginx.
  
  
 ## TODO 
+
+ 1. Port the module to **Drupal 7**.
  
-Implement a [hook_requirements()](http://api.drupal.org/api/drupal/developer--hooks--install.php/function/hook_requirements/6
+ 2. Implement a [hook_requirements()](http://api.drupal.org/api/drupal/developer--hooks--install.php/function/hook_requirements/6
 "Drupal 6 API hook requirements") in the module `.install` so that it
 checks and reports on the private file being accessible over the web.
 
-There's some work being done in that direction for Drupal 7 core on
-the issue [#929166: No warning if private files are accessible over the web](http://drupal.org/node/929166).
+   There's some work being done in that direction for Drupal 7 core on
+   the issue [#929166: No warning if private files are accessible over the web](http://drupal.org/node/929166).
+
