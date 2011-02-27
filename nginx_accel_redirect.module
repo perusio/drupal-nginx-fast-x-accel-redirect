@@ -11,6 +11,18 @@
 
 
 /**
+ * Implementation of hook_help().
+ */
+function nginx_accel_redirect_help () {
+  switch ($path) {
+    case 'admin/help#nginx_accel_redirect':
+      $output = t('<p>The Nginx');
+  }
+  
+} 
+
+
+/**
  * Implementation of hook_menu_alter().
  * Overriding the default system/files menu handler.
  */
@@ -66,7 +78,7 @@ function nginx_accel_redirect_file_transfer() {
         $header = preg_replace('/\r?\n(?!\t| )/', '', $header);
         drupal_set_header($header);
       }
-      header('X-Accel-Redirect: ' . base_path() . file_create_path($filepath));
+      header('X-Accel-Redirect: /' . file_create_path($filepath)); 
       exit();
     }
   }
