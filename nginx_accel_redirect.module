@@ -82,7 +82,7 @@ function nginx_accel_redirect_file_transfer() {
         header('X-Accel-Redirect: ' . base_path() . file_create_path($filepath));        
       } 
       else {
-        header('X-Accel-Redirect: ' . base_path() . $filepath);         
+        header('X-Accel-Redirect: ' . file_create_path($filepath));         
       }
       
       exit();
