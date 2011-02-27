@@ -96,7 +96,7 @@ directory located at `private`, when issuing:
     curl -I http://example.com/private/foobar.pdf
 
 you should get a `404 File Not Found` status
-code. `http://example.com` being the base url of your Drupal site
+code. `http://example.com` being the base url of your Drupal site.
 If not then check your Nginx config for blocking direct access to the
 private files as described above.
  
