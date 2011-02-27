@@ -78,8 +78,13 @@ function nginx_accel_redirect_file_transfer() {
         $header = preg_replace('/\r?\n(?!\t| )/', '', $header);
         drupal_set_header($header);
       }
+      if (substr(file_directory_path(), 0, 1) != '/') {
+        header('X-Accel-Redirect: ' . base_path() . file_create_path($filepath));        
+      } 
+      else {
+        header('X-Accel-Redirect: ' . base_path() . $filepath);         
+      }
       
-      header('X-Accel-Redirect: ' . realpath(file_create_path($filepath))); 
       exit();
     }
   }
