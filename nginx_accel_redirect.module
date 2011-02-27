@@ -78,7 +78,8 @@ function nginx_accel_redirect_file_transfer() {
         $header = preg_replace('/\r?\n(?!\t| )/', '', $header);
         drupal_set_header($header);
       }
-      header('X-Accel-Redirect: /' . file_create_path($filepath)); 
+      
+      header('X-Accel-Redirect: ' . realpath(file_create_path($filepath))); 
       exit();
     }
   }
