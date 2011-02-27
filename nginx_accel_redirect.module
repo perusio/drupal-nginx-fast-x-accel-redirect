@@ -21,22 +21,22 @@ function nginx_accel_redirect_help ($path, $arg) {
   switch ($path) {
     case 'admin/help#nginx_accel_redirect':
       $output = t('<p>The Nginx Accel Redirect Module implements the ' .
-                  l('XSendfile', 'http://wiki.nginx.org/XSendfile', array('attributes' => array('rel' => 'external'))) . ' facility in Nginx with Drupal.</p>');
-      $output .= t('<p> You have to specify a private path at the ' . l(t('file settings page'), 'admin/settings/file-system') . ' and then enable the X-Accel-Redirect transfer at the module ' . l(t('settings page.'), 'admin/settings/file-system/x-accel-redirect'));
+                  l('XSendfile', 'http://wiki.nginx.org/XSendfile', array('attributes' => array('rel' => 'external'))) . ' facility in Nginx with Drupal.') . '</p>';
+      $output .= '<p>' . t('You have to specify a private path at the ' . l(t('file settings page'), 'admin/settings/file-system') . ' and then enable the X-Accel-Redirect transfer at the module ' . l(t('settings page'), 'admin/settings/file-system/nginx-accel-redirect')) . '.</p>';
       return $output;
       break;
     case 'admin/settings/file-system':
       $output = '';
       if (module_exists('help')) {
-        $output = t('<p>If using a private file system please enable fast file transfers using X-Accel-Redirect at the module ') . l(t('settings page.'), 'admin/settings/file-system/x-accel-redirect') . '</p>';
+        $output = '<p>' . t('If using a private file system please enable fast file transfers using X-Accel-Redirect at the module ') . l(t('settings page'), 'admin/settings/file-system/nginx-accel-redirect') . '.</p>';
       }
       return $output;  
       break;
-  case 'admin/settings/file-system/x-accel-redirect':
+  case 'admin/settings/file-system/nginx-accel-redirect':
      $output = '';
       if (module_exists('help')) {
-        $output = t('<p>To use Nginx X-Accel-Redirect for fast private file transfer enable it below.</p>');
-        $output .= t('<p>More help at ') . l(t('this page.'), 'admin/help#nginx_accel_redirect') . '</p>';
+        $output = '<p>' . t('To use Nginx X-Accel-Redirect for fast private file transfer enable it below.') . '</p>';
+        $output .= '<p>' . t('More help at ') . l(t('this page'), 'admin/help#nginx_accel_redirect') . '.</p>';
       }
       return $output;  
       break;
