@@ -38,7 +38,7 @@ To take advantage of this module you must:
     (handling all static files).
     
  2. Have **private** files enabled in your filesystem settings page,
-    located at 'admin/settings/file-system'.
+    located at `admin/settings/file-system`.
     
 In the filesystem settings page you specify the path to the private
 files directory relative to the Drupal web root, i.e., the base
@@ -120,6 +120,7 @@ Nginx.
  2. Implement a [hook_requirements()](http://api.drupal.org/api/drupal/developer--hooks--install.php/function/hook_requirements/6
 "Drupal 6 API hook requirements") in the module `.install` so that it
 checks and reports on the private file being accessible over the web.
+
 
    There's some work being done in that direction for Drupal 7 core on
    the issue [#929166: No warning if private files are accessible over the web](http://drupal.org/node/929166).
