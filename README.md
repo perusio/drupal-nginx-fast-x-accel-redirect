@@ -78,6 +78,19 @@ files handling with a location stanza like this:
 where `@drupal` is the named location that invokes Drupal
 `index.php` with the proper query string.
 
+Note that by default nginx **logs the _missing_ files** as a 404
+error. That's how it's supposed to be. The file doesn't exist and in
+that case relay the request to the named location `@drupal`. If 
+you don't want that to happen then add `log_not_found off` to the
+above location stanza. Like this:
+
+    location ~* /system/files/ {
+       error_page 404 = @drupal;
+       log_not_found off;
+    }
+
+
+
 ## Security considerations
 
 It's always good practice to verify indeed that private files cannot
