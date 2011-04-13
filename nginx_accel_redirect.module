@@ -15,7 +15,7 @@ define('NGINX_ACCEL_REDIRECT_NGINX_TRANSFER', 1);
 
 
 /**
- * Implementation of hook_help().
+ * Implements hook_help().
  */
 function nginx_accel_redirect_help ($path, $arg) {
   switch ($path) {
@@ -45,7 +45,7 @@ function nginx_accel_redirect_help ($path, $arg) {
 
 
 /**
- * Implementation of hook_menu_alter().
+ * Implements hook_menu_alter().
  * Overriding the default system/files menu handler.
  */
 function nginx_accel_redirect_menu_alter(&$items) {
@@ -54,7 +54,7 @@ function nginx_accel_redirect_menu_alter(&$items) {
 
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function nginx_accel_redirect_menu() {
   $items = array();
