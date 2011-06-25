@@ -30,8 +30,6 @@ function nginx_accel_redirect_get_check_filename() {
  */
 function nginx_accel_redirect_requirements($phase) {
 
-  static $check_protected_filename, $check_protected_url;
-  
   // Ensure translations don't break at install time.
   $t = get_t();
 
@@ -40,11 +38,9 @@ function nginx_accel_redirect_requirements($phase) {
   if ($phase == 'runtime') {
     // Get the URL to the runtime file check. This mimics
     // http://api.drupal.org/api/drupal/includes--file.inc/function/file_create_url/6.
-    if (empty($check_protected_filename)) {
-      $check_protected_filename = file_directory_path() . '/' . nginx_accel_redirect_get_check_filename();
-      $check_protected_url = $GLOBALS['base_url'] . '/' . $check_protected_filename;  
-    }
-    
+    $check_protected_filename = file_directory_path() . '/' . nginx_accel_redirect_get_check_filename();
+    $check_protected_url = $GLOBALS['base_url'] . '/' . $check_protected_filename;  
+
     // Write the runtime check file if not in place.
     nginx_accel_redirect_write_runtime_check_file($check_protected_filename);
     // Use cURL if available.
