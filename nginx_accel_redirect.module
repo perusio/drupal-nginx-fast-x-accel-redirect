@@ -175,8 +175,8 @@ function nginx_accel_redirect_get_nginx_config() {
   else {
     $output .= '  try_files $uri /index.php?q=$uri&$args;';
   }
-  $output .= "\n ## Uncomment the line below to disable 404 logging.\n";
-  $output .= "   #log_not_found off;\n}\n\n";
+  $output .= "\n  ## Uncomment the line below to disable 404 logging.\n";
+  $output .= "  #log_not_found off;\n}\n\n";
   
   return $output;
 } // nginx_accel_redirect_get_nginx_config
