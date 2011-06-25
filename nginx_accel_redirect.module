@@ -167,9 +167,9 @@ function nginx_accel_redirect_get_nginx_config() {
   // The system/files serving.
   $output .= '## Relay the file handling to Drupal at this location.';
   $output .= "\nlocation ~* /system/files/ {\n";
-  // Test if purl is installed. If so suggest. A config with rewrites.
+  // Test if purl is installed. If so suggest a config with a rewrite.
   if (module_exists('purl')) {
-    $output .= "See the README for an explanation of @drupal.\n";
+    $output .= "  ## See the README for an explanation of @drupal.\n";
     $output .= '  try_files $uri @drupal;';
   }
   else {
