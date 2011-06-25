@@ -141,7 +141,7 @@ function nginx_accel_redirect_admin_settings() {
     '#description' => t('Copy & paste to your vhost Nginx configuration to protect the private files
 directory'),
     '#default_value' => nginx_accel_redirect_get_nginx_config(),
-    '#rows' => 5,
+    '#rows' => 10,
     '#cols' => 70,
   );
 
@@ -157,10 +157,26 @@ directory'),
  *   The suggested configuration for Nginx.
  */
 function nginx_accel_redirect_get_nginx_config() {
+
+  // The private files directory protection.
   $output = '## To be placed at the the top of your vhost configuration (server block).';
   $output .= "\n## Protect the private files directory.\n";
   $output .= 'location ~* /' . file_directory_path() . "/ {\n";
-  $output .= "  internal;\n}\n";
+  $output .= "  internal;\n}\n\n";
 
+  // The system/files serving.
+  $output .= '## Relay the file handling to Drupal at this location.';
+  $output .= "\nlocation ~* /system/files/ {\n";
+  // Test if purl is installed. If so suggest. A config with rewrites.
+  if (module_exists('purl')) {
+    $output .= "See the README for an explanation of @drupal.\n";
+    $output .= '  try_files $uri @drupal;';
+  }
+  else {
+    $output .= '  try_files $uri /index.php?q=$uri&$args;';
+  }
+  $output .= "\n ## Uncomment the line below to disable 404 logging.\n";
+  $output .= "   #log_not_found off;\n}\n\n";
+  
   return $output;
 } // nginx_accel_redirect_get_nginx_config

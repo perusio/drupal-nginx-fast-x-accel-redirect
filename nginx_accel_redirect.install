@@ -73,7 +73,7 @@ function nginx_accel_redirect_requirements($phase) {
     else {
       $value = $t('Unprotected');
       $severity = REQUIREMENT_ERROR;
-      $description = $t('Private files are acessible from the web. Protect them please with this ' . l('configuration', 'admin/settings/file-system/nginx-accel-redirect')); 
+      $description = $t('Private files are acessible from the web. Protect them please with this ' . l('configuration', 'admin/settings/file-system/nginx-accel-redirect')) . '.'; 
     }
     // Return the requirements array.
     return array(
