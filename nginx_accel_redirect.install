@@ -6,7 +6,6 @@
  * 
  * @brief  Install file for the nginx_accel_redirect module.
  * 
- * 
  */
 
 /** 
@@ -27,7 +26,7 @@ function nginx_accel_redirect_get_check_filename() {
 
 
 /** 
- * Implement hook_requirements().
+ * Implements hook_requirements().
  */
 function nginx_accel_redirect_requirements($phase) {
 
@@ -74,7 +73,7 @@ function nginx_accel_redirect_requirements($phase) {
     else {
       $value = $t('Unprotected');
       $severity = REQUIREMENT_ERROR;
-      $description = $t('Private files are acessible from the web. Protect them please with an \'internal\' directive.');
+      $description = $t('Private files are acessible from the web. Protect them please with this ' . l('configuration', 'admin/settings/file-system/nginx-accel-redirect')); 
     }
     // Return the requirements array.
     return array(
@@ -87,13 +86,23 @@ function nginx_accel_redirect_requirements($phase) {
 
 
 /**
- * Implement hook_install().
+ * Implements hook_install().
  */
 function nginx_accel_redirect_install() {
   // Check if there's a filename for testing the accessibility of the private
   // files dir.
   nginx_accel_redirect_get_check_filename();
 } // nginx_accel_redirect_install
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function nginx_accel_redirect_uninstall() {
+  // Remove no longer needed variables.
+  variable_del('nginx_accel_redirect_transfer');
+  variable_del('nginx_accel_redirect_run_filename');
+} // nginx_accel_redirect_uninstall
 
 
 /** 
@@ -111,12 +120,3 @@ function nginx_accel_redirect_write_runtime_check_file($filename) {
     touch($filename);
   }
 } // nginx_accel_redirect_write_runtime_check_file
-
-/**
- * Implement hook_uninstall().
- */
-function nginx_accel_redirect_uninstall() {
-  // Remove no longer needed variables.
-  variable_del('nginx_accel_redirect_transfer');
-  variable_del('nginx_accel_redirect_run_filename');
-} // nginx_accel_redirect_uninstall

@@ -6,7 +6,6 @@
  * 
  * @brief Module that implements accelerated private file transfers for Nginx.
  * 
- * 
  */
 
 // Constants that define the options for the settings form.
@@ -116,14 +115,17 @@ function nginx_accel_redirect_file_transfer() {
 function nginx_accel_redirect_admin_settings() {
   $form = array();
 
+  // Add the CSS for styling the Nginx configuration suggestion.
+  drupal_add_css(drupal_get_path('module', 'nginx_accel_redirect') . '/nginx_accel_redirect_form.css');
+  
   $form['fast_file_transfer'] = array(
     '#type' => 'fieldset',
-    '#title' => 'Fast private file transfer for Nginx',
+    '#title' => t('Fast private file transfer for Nginx'),
     '#collapsible' => TRUE,
   );
   $form['fast_file_transfer']['nginx_accel_redirect_transfer'] = array(
     '#type' => 'radios',
-    '#title' => 'X-Accel-Redirect: fast private file transfer support for Nginx',
+    '#title' => t('X-Accel-Redirect: fast private file transfer support for Nginx'),
     '#default_value' => variable_get('nginx_accel_redirect_transfer',
                                      NGINX_ACCEL_REDIRECT_PHP_TRANSFER),
     '#options' => array(NGINX_ACCEL_REDIRECT_PHP_TRANSFER =>
@@ -132,6 +134,33 @@ function nginx_accel_redirect_admin_settings() {
                         t('Files transferred by Nginx using X-Accel-Redirect')),
     '#description' => 'Enable X-Accel-Redirect support.'
   );
-    
+
+  $form['fast_file_transfer']['nginx_accel_redirect_config_suggestion'] = array(
+    '#type' => 'textarea',
+    '#title' => t('X-Accel-Redirect: configuration for protecting the private files directory'),
+    '#description' => t('Copy & paste to your vhost Nginx configuration to protect the private files
+directory'),
+    '#default_value' => nginx_accel_redirect_get_nginx_config(),
+    '#rows' => 5,
+    '#cols' => 70,
+  );
+
   return system_settings_form($form);
 } // nginx_accel_redirect_admin_settings
+
+
+/** 
+ * Generates the suggested Nginx configuration for protecting the private
+ *  files directory.
+ * 
+ * @return string
+ *   The suggested configuration for Nginx.
+ */
+function nginx_accel_redirect_get_nginx_config() {
+  $output = '## To be placed at the the top of your vhost configuration (server block).';
+  $output .= "\n## Protect the private files directory.\n";
+  $output .= 'location ~* /' . file_directory_path() . "/ {\n";
+  $output .= "  internal;\n}\n";
+
+  return $output;
+} // nginx_accel_redirect_get_nginx_config
