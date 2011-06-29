@@ -16,7 +16,7 @@ define('NGINX_ACCEL_REDIRECT_NGINX_TRANSFER', 1);
 /**
  * Implements hook_help().
  */
-function nginx_accel_redirect_help ($path, $arg) {
+function nginx_accel_redirect_help($path, $arg) {
   switch ($path) {
     case 'admin/help#nginx_accel_redirect':
       $output = t('<p>The Nginx Accel Redirect Module implements the ' .

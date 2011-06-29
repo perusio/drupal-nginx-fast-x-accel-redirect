@@ -76,7 +76,8 @@ function nginx_accel_redirect_requirements($phase) {
       'nginx_accel_redirect' => array('title' => $t('Private file directory web access status'),
                                       'description' => $description,
                                       'value' => $value,
-                                      'severity' => $severity,));
+                                      'severity' => $severity,
+      ));
   } // runtime  
 } // nginx_accel_redirect_requirements()
 
