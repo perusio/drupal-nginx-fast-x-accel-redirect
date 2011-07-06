@@ -1,9 +1,9 @@
-; $Id$
 name = Nginx Accel Redirect 
 description = Enables Nginx fast private file transfer.
-package = File System 
-version = 6.x-1.0
-core = 6.x
+package = File System
+files[] = nginx_accel_redirect.module
+version = 7.x-1.x
+core = 7.x
 php = 5.2
 
 

@@ -3,120 +3,17 @@
  * @file   nginx_accel_redirect.install
  * @author António P. P. Almeida <appa@perusio.net>
  * @date   Wed Feb 23 00:19:31 2011
- * 
+ *
  * @brief  Install file for the nginx_accel_redirect module.
- * 
+ *
+ *
  */
-
-/** 
- * Get the filename for testing access from the web to the private files
- * directory.
- * 
- * @return nothing
- *   Only side effects.
- */
-function nginx_accel_redirect_get_check_filename() {
-  if (!variable_get('nginx_accel_redirect_run_filename', FALSE)) {
-    variable_set('nginx_accel_redirect_run_filename',
-                 uniqid('00nginx_accel_redirect', TRUE));
-  }
-  // Return the filename.
-  return variable_get('nginx_accel_redirect_run_filename', FALSE);
-} // nginx_accel_redirect_get_check_filename
-
-
-/** 
- * Implements hook_requirements().
- */
-function nginx_accel_redirect_requirements($phase) {
-
-  static $check_protected_filename, $check_protected_url;
-  
-  // Ensure translations don't break at install time.
-  $t = get_t();
-
-  // On the runtime phase check to see if the files are acessible from
-  // outside.
-  if ($phase == 'runtime') {
-    // Get the URL to the runtime file check. This mimics
-    // http://api.drupal.org/api/drupal/includes--file.inc/function/file_create_url/6.
-    if (empty($check_protected_filename)) {
-      $check_protected_filename = file_directory_path() . '/' . nginx_accel_redirect_get_check_filename();
-      $check_protected_url = $GLOBALS['base_url'] . '/' . $check_protected_filename;  
-    }
-    
-    // Write the runtime check file if not in place.
-    nginx_accel_redirect_write_runtime_check_file($check_protected_filename);
-    // Use cURL if available.
-    if (extension_loaded('curl')) {
-      $ch = curl_init();
-      // Set the options to cURL.
-      curl_setopt_array($ch, array(CURLOPT_URL => $check_protected_url,
-                                   CURLOPT_RETURNTRANSFER => TRUE,
-                        ));
-      // Run cURL.
-      curl_exec($ch);
-      // Get the status code returned.
-      $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      // Destroy the handler.
-      curl_close($ch);
-    }
-    else { // if cURL is not available use drupal_http_request().
-      $status = drupal_http_request($check_protected_url)->code;
-    }
-    // Test if the location is protected or not.
-    if ($status == '404') {
-      $value = $t('Protected');
-      $severity = REQUIREMENT_OK;
-      $description = $t('Private files are protected. Not web accessible.');
-    }
-    else {
-      $value = $t('Unprotected');
-      $severity = REQUIREMENT_ERROR;
-      $description = $t('Private files are acessible from the web. Protect them please with this ' . l('configuration', 'admin/settings/file-system/nginx-accel-redirect')) . '.'; 
-    }
-    // Return the requirements array.
-    return array(
-      'nginx_accel_redirect' => array('title' => $t('Private file directory web access status'),
-                                      'description' => $description,
-                                      'value' => $value,
-                                      'severity' => $severity,));
-  } // runtime  
-} // nginx_accel_redirect_requirements()
 
 
 /**
- * Implements hook_install().
- */
-function nginx_accel_redirect_install() {
-  // Check if there's a filename for testing the accessibility of the private
-  // files dir.
-  nginx_accel_redirect_get_check_filename();
-} // nginx_accel_redirect_install
-
-
-/**
- * Implements hook_uninstall().
+ * Implement hook_uninstall().
  */
 function nginx_accel_redirect_uninstall() {
   // Remove no longer needed variables.
   variable_del('nginx_accel_redirect_transfer');
-  variable_del('nginx_accel_redirect_run_filename');
-} // nginx_accel_redirect_uninstall
-
-
-/** 
- * Tries to stat() the runtime check file for testing web access to the
- * private files directory.
- * 
- * @param $filename
- *   The run time check filename for web access protection.
- * 
- * @return 
- */
-function nginx_accel_redirect_write_runtime_check_file($filename) {
-  // Check if the file exists. If not then touch it.
-  if (!file_exists($filename)) {
-    touch($filename);
-  }
-} // nginx_accel_redirect_write_runtime_check_file
+}
