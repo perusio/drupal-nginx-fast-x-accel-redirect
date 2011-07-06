@@ -3,9 +3,9 @@
  * @file   nginx_accel_redirect.module
  * @author António P. P. Almeida <appa@perusio.net>
  * @date   Wed Feb 23 00:18:59 2011
- * 
+ *
  * @brief Module that implements accelerated private file transfers for Nginx.
- * 
+ *
  */
 
 // Constants that define the options for the settings form.
@@ -29,17 +29,17 @@ function nginx_accel_redirect_help($path, $arg) {
       if (module_exists('help')) {
         $output = '<p>' . t('If using a private file system please enable fast file transfers using X-Accel-Redirect at the module ') . l(t('settings page'), 'admin/settings/file-system/nginx-accel-redirect') . '.</p>';
       }
-      return $output;  
+      return $output;
       break;
-  case 'admin/settings/file-system/nginx-accel-redirect':
-     $output = '';
+    case 'admin/settings/file-system/nginx-accel-redirect':
+      $output = '';
       if (module_exists('help')) {
         $output = '<p>' . t('To use Nginx X-Accel-Redirect for fast private file transfer enable it below.') . '</p>';
         $output .= '<p>' . t('More help at ') . l(t('this page'), 'admin/help#nginx_accel_redirect') . '.</p>';
       }
-      return $output;  
+      return $output;
       break;
-  } 
+  }
 } // nginx_accel_redirect_help
 
 
@@ -77,7 +77,7 @@ function nginx_accel_redirect_menu() {
 function nginx_accel_redirect_file_transfer() {
 
   $args = func_get_args();
-  
+
   if (!variable_get('nginx_accel_redirect_transfer',
                     NGINX_ACCEL_REDIRECT_PHP_TRANSFER)) {
     call_user_func_array('file_download', $args);
@@ -101,7 +101,7 @@ function nginx_accel_redirect_file_transfer() {
         drupal_set_header($header);
       }
       // Setting the X-Accel-Redirect header for Nginx.
-      header('X-Accel-Redirect: ' . base_path() . file_create_path($filepath));        
+      header('X-Accel-Redirect: ' . base_path() . file_create_path($filepath));
       exit();
     }
   }
@@ -117,7 +117,7 @@ function nginx_accel_redirect_admin_settings() {
 
   // Add the CSS for styling the Nginx configuration suggestion.
   drupal_add_css(drupal_get_path('module', 'nginx_accel_redirect') . '/nginx_accel_redirect_form.css');
-  
+
   $form['fast_file_transfer'] = array(
     '#type' => 'fieldset',
     '#title' => t('Fast private file transfer for Nginx'),
@@ -126,8 +126,9 @@ function nginx_accel_redirect_admin_settings() {
   $form['fast_file_transfer']['nginx_accel_redirect_transfer'] = array(
     '#type' => 'radios',
     '#title' => t('X-Accel-Redirect: fast private file transfer support for Nginx'),
-    '#default_value' => variable_get('nginx_accel_redirect_transfer',
-                                     NGINX_ACCEL_REDIRECT_PHP_TRANSFER),
+    '#default_value' => variable_get(
+      'nginx_accel_redirect_transfer',
+      NGINX_ACCEL_REDIRECT_PHP_TRANSFER),
     '#options' => array(NGINX_ACCEL_REDIRECT_PHP_TRANSFER =>
                         t('Files transfered by PHP'),
                         NGINX_ACCEL_REDIRECT_NGINX_TRANSFER =>
@@ -149,10 +150,10 @@ directory'),
 } // nginx_accel_redirect_admin_settings
 
 
-/** 
+/**
  * Generates the suggested Nginx configuration for protecting the private
  *  files directory.
- * 
+ *
  * @return string
  *   The suggested configuration for Nginx.
  */
@@ -177,6 +178,6 @@ function nginx_accel_redirect_get_nginx_config() {
   }
   $output .= "\n  ## Uncomment the line below to disable 404 logging.\n";
   $output .= "  #log_not_found off;\n}\n\n";
-  
+
   return $output;
 } // nginx_accel_redirect_get_nginx_config
