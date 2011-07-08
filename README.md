@@ -182,7 +182,7 @@ or
       log_not_found off;
     }
 
-    depending on the above discussed situation.
+depending on the above discussed situation.
 
 The **advanced configuration** makes use of a
 [`fastcgi_private_files.conf`](https://github.com/perusio/drupal-with-nginx/blob/master/fastcgi_private_files.conf)
