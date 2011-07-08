@@ -165,7 +165,7 @@ above location stanza. Like this:
       log_not_found off;
     }
 
-      or
+or
 
     location ~* /system/files/ {
       ## fastcgi_params is a file at the nginx config root that contains
