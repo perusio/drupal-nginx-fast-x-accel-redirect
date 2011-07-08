@@ -199,7 +199,7 @@ function nginx_accel_redirect_get_nginx_config($advanced = FALSE) {
   // The private files directory protection.
   $output = '## To be placed at the the top of your vhost configuration (server).';
   $output .= "\n## Protect the private files directory.\n";
-  $output .= 'location ' .  $nginx_location_operator . ' /' . file_directory_path() . "/ {\n";
+  $output .= 'location ' .  $nginx_location_operator . ' /' . variable_get('file_private_path', '') . "/ {\n";
   $output .= "   internal;\n}\n\n";
 
   // The system/files serving.

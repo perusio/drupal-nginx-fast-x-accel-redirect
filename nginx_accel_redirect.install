@@ -39,7 +39,8 @@ function nginx_accel_redirect_requirements($phase) {
   if ($phase == 'runtime') {
     // Get the URL to the runtime file check. This mimics
     // http://api.drupal.org/api/drupal/includes--file.inc/function/file_create_url/6.
-    $check_protected_filename = file_directory_path() . '/' . nginx_accel_redirect_get_check_filename();
+    $check_protected_filename =
+      variable_get('file_private_path', '') . '/' . nginx_accel_redirect_get_check_filename();
     $check_protected_url = $GLOBALS['base_url'] . '/' . $check_protected_filename;
 
     // Write the runtime check file if not in place.
