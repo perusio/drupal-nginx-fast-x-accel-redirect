@@ -89,19 +89,21 @@ guarantees that the files are accessible only by the server. No
 external access is possible.
 
 In the settings form at
-`admin/settings/file-system/nginx-accel-redirect` there's a suggested
-configuration for protecting the private files directory. Assuming
-that you're having the private files directory at `/files/private` the
-suggested config will be:
+`admin/settings/file-system/nginx-accel-redirect` (drupal 6) or
+`admin/config/media/file-system/nginx-accel-redirect` (drupal 7)
+there's a suggested configuration for protecting the private files
+directory. Assuming that you're having the private files directory at
+`sites/default/files/private` the suggested config will be:
 
-    location ~* /files/private/ {
+    location ^~ /sites/default/files/private/ {
     internal;
     }
 
-    Also you must relay the `system/files/` path to Drupal in your Nginx
-    config. The module also suggests a configuration stanza for that at
-    the settings form at
-    `admin/settings/file-system/nginx-accel-redirect`.
+Also you must relay the `system/files/` path to Drupal in your Nginx
+config. The module also suggests two possible configuration stanzas
+for that in the settings form at `admin/settings/file-system/nginx-accel-redirect`
+(drupal 6) or `admin/config/media/file-system/nginx-accel-redirect`
+(drupal7). A **basic** and an **advanced** configuration.
 
 The exact configuration details will vary with your setup but
 if you use a configuration like
@@ -109,14 +111,23 @@ if you use a configuration like
 on github") this will be already contemplated. Most configs that are
 referenced in the groups.drupal.org
 [Nginx](http://groups.drupal.org/nginx) group accommodate private
-files handling with a location stanza like this:
+files handling. Here's a **basic** configuration.
 
-    location ~* /system/files/ {
-    try_files $uri /index.php?q=$uri&$args;
-    log_not_found off;
+    location ^~ /system/files/ {
+    include fastcgi_params;
+    ## fastcgi_params is a file at the nginx config root that contains
+    ## the 'usual' settings for FastCGI.
+    include fastcgi_params;
+    ## Here begins the specific part.
+    fastcgi_param QUERY_STRING q=$uri;
+    fastcgi_param SCRIPT_NAME /index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+    ## Adjust accordingly to your setup.
+    ## This assumes UNIX sockets with php-fpm.
+    fastcgi_pass unix:/var/run/php-fpm.sock;
     }
 
-if you're on **drupal 7**, or on drupal 6 not using anything that uses
+if you're on **drupal 7**, or on drupal 6 **not relying** on anything that uses
 [custom\_url\_rewrite\_outbound](http://api.drupal.org/api/drupal/developer--hooks--core.php/function/custom_url_rewrite_outbound/6).  This excludes sites using the [purl](http://drupal.org/project/purl)
 module or other module relying on it like
 [spaces](http://drupal.org/project/spaces). Two very popular
@@ -125,12 +136,17 @@ drupal based projects make use of it:
 [ManagingNews](http://managingnews.com). In that case use:
 
     location ~* /system/files/ {
-    try_files $uri @drupal;
+    ## fastcgi_params is a file at the nginx config root that contains
+    ## the 'usual' settings for FastCGI.
+    include fastcgi_params;
+    ## Here begins the specific part.
+    fastcgi_param QUERY_STRING q=$uri;
+    fastcgi_param SCRIPT_NAME /index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+    ## Adjust accordingly to your setup.
+    ## This assumes UNIX sockets with php-fpm.
+    fastcgi_pass unix:/var/run/php-fpm.sock;
     }
-
-where `@drupal` is the
-[`named location`](https://github.com/perusio/drupal-with-nginx/blob/master/sites-available/drupal_spaces.conf)
-that invokes Drupal `index.php` with the proper query string and arguments.
 
 Note that by default nginx **logs the _missing_ files** as a 404
 error. That's how it's supposed to be. The file doesn't exist and in
@@ -138,17 +154,44 @@ that case relay the request to the named location `@drupal`. If
 you don't want that to happen then add `log_not_found off` to the
 above location stanza. Like this:
 
-    location ~* /system/files/ {
-    try_files $uri /index.php?q=$uri&$args;
-    log_not_found off;
-    }
-    or
+    location ^~ /system/files/ {
+    ## fastcgi_params is a file at the nginx config root that contains
+    ## the 'usual' settings for FastCGI.
+    include fastcgi_params;
+    ## Here begins the specific part.
+    fastcgi_param QUERY_STRING q=$uri;
+    fastcgi_param SCRIPT_NAME /index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+    ## Adjust accordingly to your setup.
+    ## This assumes UNIX sockets with php-fpm.
+    fastcgi_pass unix:/var/run/php-fpm.sock;
+
+      log_not_found off;
+      }
+
+      or
 
     location ~* /system/files/ {
-    try_files $uri @drupal
-    log_not_found off;
-    }
+    ## fastcgi_params is a file at the nginx config root that contains
+    ## the 'usual' settings for FastCGI.
+    include fastcgi_params;
+    ## Here begins the specific part.
+    fastcgi_param QUERY_STRING q=$uri;
+    fastcgi_param SCRIPT_NAME /index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+    ## Adjust accordingly to your setup.
+    ## This assumes UNIX sockets with php-fpm.
+    fastcgi_pass unix:/var/run/php-fpm.sock;
+
+      log_not_found off;
+      }
+
     depending on the above discussed situation.
+
+The **advanced configuration** makes use of a
+[`fastcgi_private_files.conf`](https://github.com/perusio/drupal-with-nginx/blob/master/fastcgi_private_files.conf)
+file that specifies the proper fastcgi parameters for handling private
+files. Further details on the settings form or at [github](https://github.com/perusio/drupal-with-nginx).
 
 ## Security considerations
 
