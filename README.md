@@ -4,19 +4,15 @@
 
  1. Install the module as usual.
 
- 2. **drupal 6**: Go to `admin/settings/file-system` and enable
- **private files**.
+ 2. **drupal 6**: Go to `admin/settings/file-system` and enable **private files**.
 
-   **drupal 7**: Go to `admin/config/media/file-system` and enable
-   **private files**.
+    **drupal 7**: Go to `admin/config/media/file-system` and enable **private files**.
 
  3. **drupal 6**: Go to
- `admin/settings/file-system/nginx-accel-redirect` and enable
- **Files transferred by Nginx using X-Accel-Redirect**.
+ `admin/settings/file-system/nginx-accel-redirect` and enable **Files transferred by Nginx using X-Accel-Redirect**.
 
     **drupal 7**: Go to
-    `admin/config/media/file-system/nginx-accel-redirect` and enable
-    **Files transferred by Nginx using X-Accel-Redirect**.
+    `admin/config/media/file-system/nginx-accel-redirect` and enable **Files transferred by Nginx using X-Accel-Redirect**.
 
  4. **drupal 6**: Copy the suggested configuration at
  `admin/settings/file-system/nginx-accel-redirect` from the
@@ -96,7 +92,7 @@ directory. Assuming that you're having the private files directory at
 `sites/default/files/private` the suggested config will be:
 
     location ^~ /sites/default/files/private/ {
-    internal;
+      internal;
     }
 
 Also you must relay the `system/files/` path to Drupal in your Nginx
@@ -114,17 +110,17 @@ referenced in the groups.drupal.org
 files handling. Here's a **basic** configuration.
 
     location ^~ /system/files/ {
-    include fastcgi_params;
-    ## fastcgi_params is a file at the nginx config root that contains
-    ## the 'usual' settings for FastCGI.
-    include fastcgi_params;
-    ## Here begins the specific part.
-    fastcgi_param QUERY_STRING q=$uri;
-    fastcgi_param SCRIPT_NAME /index.php;
-    fastcgi_param SCRIPT_FILENAME $document_root/index.php;
-    ## Adjust accordingly to your setup.
-    ## This assumes UNIX sockets with php-fpm.
-    fastcgi_pass unix:/var/run/php-fpm.sock;
+       include fastcgi_params;
+       ## fastcgi_params is a file at the nginx config root that contains
+       ## the 'usual' settings for FastCGI.
+       include fastcgi_params;
+       ## Here begins the specific part.
+       fastcgi_param QUERY_STRING q=$uri;
+       fastcgi_param SCRIPT_NAME /index.php;
+       fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+       ## Adjust accordingly to your setup.
+       ## This assumes UNIX sockets with php-fpm.
+       fastcgi_pass unix:/var/run/php-fpm.sock;
     }
 
 if you're on **drupal 7**, or on drupal 6 **not relying** on anything that uses
@@ -136,16 +132,16 @@ drupal based projects make use of it:
 [ManagingNews](http://managingnews.com). In that case use:
 
     location ~* /system/files/ {
-    ## fastcgi_params is a file at the nginx config root that contains
-    ## the 'usual' settings for FastCGI.
-    include fastcgi_params;
-    ## Here begins the specific part.
-    fastcgi_param QUERY_STRING q=$uri;
-    fastcgi_param SCRIPT_NAME /index.php;
-    fastcgi_param SCRIPT_FILENAME $document_root/index.php;
-    ## Adjust accordingly to your setup.
-    ## This assumes UNIX sockets with php-fpm.
-    fastcgi_pass unix:/var/run/php-fpm.sock;
+      ## fastcgi_params is a file at the nginx config root that contains
+      ## the 'usual' settings for FastCGI.
+      include fastcgi_params;
+      ## Here begins the specific part.
+      fastcgi_param QUERY_STRING q=$uri;
+      fastcgi_param SCRIPT_NAME /index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+      ## Adjust accordingly to your setup.
+      ## This assumes UNIX sockets with php-fpm.
+      fastcgi_pass unix:/var/run/php-fpm.sock;
     }
 
 Note that by default nginx **logs the _missing_ files** as a 404
@@ -155,36 +151,36 @@ you don't want that to happen then add `log_not_found off` to the
 above location stanza. Like this:
 
     location ^~ /system/files/ {
-    ## fastcgi_params is a file at the nginx config root that contains
-    ## the 'usual' settings for FastCGI.
-    include fastcgi_params;
-    ## Here begins the specific part.
-    fastcgi_param QUERY_STRING q=$uri;
-    fastcgi_param SCRIPT_NAME /index.php;
-    fastcgi_param SCRIPT_FILENAME $document_root/index.php;
-    ## Adjust accordingly to your setup.
-    ## This assumes UNIX sockets with php-fpm.
-    fastcgi_pass unix:/var/run/php-fpm.sock;
+      ## fastcgi_params is a file at the nginx config root that contains
+      ## the 'usual' settings for FastCGI.
+      include fastcgi_params;
+      ## Here begins the specific part.
+      fastcgi_param QUERY_STRING q=$uri;
+      fastcgi_param SCRIPT_NAME /index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+      ## Adjust accordingly to your setup.
+      ## This assumes UNIX sockets with php-fpm.
+      fastcgi_pass unix:/var/run/php-fpm.sock;
 
       log_not_found off;
-      }
+    }
 
       or
 
     location ~* /system/files/ {
-    ## fastcgi_params is a file at the nginx config root that contains
-    ## the 'usual' settings for FastCGI.
-    include fastcgi_params;
-    ## Here begins the specific part.
-    fastcgi_param QUERY_STRING q=$uri;
-    fastcgi_param SCRIPT_NAME /index.php;
-    fastcgi_param SCRIPT_FILENAME $document_root/index.php;
-    ## Adjust accordingly to your setup.
-    ## This assumes UNIX sockets with php-fpm.
-    fastcgi_pass unix:/var/run/php-fpm.sock;
+      ## fastcgi_params is a file at the nginx config root that contains
+      ## the 'usual' settings for FastCGI.
+      include fastcgi_params;
+      ## Here begins the specific part.
+      fastcgi_param QUERY_STRING q=$uri;
+      fastcgi_param SCRIPT_NAME /index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+      ## Adjust accordingly to your setup.
+      ## This assumes UNIX sockets with php-fpm.
+      fastcgi_pass unix:/var/run/php-fpm.sock;
 
       log_not_found off;
-      }
+    }
 
     depending on the above discussed situation.
 
