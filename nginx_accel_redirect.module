@@ -138,46 +138,79 @@ function nginx_accel_redirect_admin_settings() {
 
   $form['fast_file_transfer']['nginx_accel_redirect_config_suggestion'] = array(
     '#type' => 'textarea',
-    '#title' => t('X-Accel-Redirect: configuration for protecting the private files directory'),
-    '#description' => t('Copy & paste to your vhost Nginx configuration to protect the private files
-directory'),
+    '#title' => t('X-Accel-Redirect: Basic configuration for serving files and protecting the private files directory'),
+    '#description' => t('Copy & paste to your vhost Nginx configuration to protect the private files and serve them.'),
     '#default_value' => nginx_accel_redirect_get_nginx_config(),
     '#rows' => 10,
     '#cols' => 70,
   );
 
+  $form['fast_file_transfer']['nginx_accel_redirect_advanced_config_text'] = array(
+    '#prefix' => '<br/><p>',
+    '#value' => t('Also you can simplify the location /system/files if using an include file with the proper fastcgi parameters like this: ') . l('https://github.com/perusio/drupal-with-nginx/blob/master/fastcgi_private_files.conf', 'https://github.com/perusio/drupal-with-nginx/blob/master/fastcgi_private_files.conf') . '.' ,
+    '#suffix' => '</p><br/>'
+  );
+
+  $form['fast_file_transfer']['nginx_accel_redirect_advanced_config_suggestion'] = array(
+    '#type' => 'textarea',
+    '#title' => t('X-Accel-Redirect: Advanced configuration for serving and protecting private files.'),
+    '#description' => t('Copy & paste to your vhost config to serve private files.'),
+    '#default_value' => nginx_accel_redirect_get_nginx_config(TRUE),
+    '#cols' => '70',
+    '#rows' => '10',
+  );
+
   return system_settings_form($form);
 } // nginx_accel_redirect_admin_settings
-
 
 /**
  * Generates the suggested Nginx configuration for protecting the private
  *  files directory.
  *
+ * @param $advanced boolean
+ *   It's TRUE if the config to be generated is the advanced.
+ *
  * @return string
  *   The suggested configuration for Nginx.
  */
-function nginx_accel_redirect_get_nginx_config() {
+
+function nginx_accel_redirect_get_nginx_config($advanced = FALSE) {
+
+  // Check to see if the purl module is installed. If so use regex based
+  // locations otherwise use literal locations.
+  $nginx_location_operator = module_exists('purl') ? '~*' : '^~';
 
   // The private files directory protection.
-  $output = '## To be placed at the the top of your vhost configuration (server block).';
+  $output = '## To be placed at the the top of your vhost configuration (server).';
   $output .= "\n## Protect the private files directory.\n";
-  $output .= 'location ~* /' . file_directory_path() . "/ {\n";
-  $output .= "  internal;\n}\n\n";
+  $output .= 'location ' .  $nginx_location_operator . ' /' . file_directory_path() . "/ {\n";
+  $output .= "   internal;\n}\n\n";
 
   // The system/files serving.
   $output .= '## Relay the file handling to Drupal at this location.';
-  $output .= "\nlocation ~* /system/files/ {\n";
-  // Test if purl is installed. If so suggest a config with a rewrite.
-  if (module_exists('purl')) {
-    $output .= "  ## See the README for an explanation of @drupal.\n";
-    $output .= '  try_files $uri @drupal;';
+  $output .= "\nlocation " . $nginx_location_operator . " /system/files/ {\n";
+  // Check to see which configuration snippet is going to be served based on
+  // the $advanced.
+  if ($advanced) {
+    $output .= "   ## fastcgi_private_files.conf is a file at the nginx config\n";
+    $output .= "   ## root that contains the settings for fast private file serving.\n";
+    $output .= "   include fastcgi_private_files.conf;\n";
   }
   else {
-    $output .= '  try_files $uri /index.php?q=$uri&$args;';
+    $output .= "   ## fastcgi_params is a file at the nginx config root that contains\n";
+    $output .= "   ## the 'usual' settings for FastCGI.\n";
+    $output .= "   include fastcgi_params;\n";
+    $output .= "   ## Here begins the specific part.\n";
+    $output .= "   fastcgi_param QUERY_STRING q=\$uri;\n";
+    $output .= "   fastcgi_param SCRIPT_NAME /index.php;\n";
+    $output .= "   fastcgi_param SCRIPT_FILENAME \$document_root/index.php;\n";
   }
-  $output .= "\n  ## Uncomment the line below to disable 404 logging.\n";
-  $output .= "  #log_not_found off;\n}\n\n";
+
+  $output .= "   ## Adjust accordingly to your setup.\n";
+  $output .= "   ## This assumes UNIX sockets with php-fpm.\n";
+  $output .= "   fastcgi_pass unix:/var/run/php-fpm.sock;\n\n";
+  $output .= "   ## Uncomment the line below to disable 404 logging.\n";
+  $output .= "   #log_not_found off;\n}\n\n";
 
   return $output;
 } // nginx_accel_redirect_get_nginx_config

@@ -1,30 +1,44 @@
-# Nginx Fast Private File Transfer for Drupal using X-Accel-Redirect 
+# Nginx Fast Private File Transfer for Drupal using X-Accel-Redirect
 
 ## Installation (for the impatient)
- 
+
  1. Install the module as usual.
- 
- 2. Go to `admin/settings/file-system` and enable **private files**. 
- 
- 3. Go to `admin/settings/file-system/nginx-accel-redirect` and enable
-    the **Files transferred by Nginx using X-Accel-Redirect**.
-    
- 4. Copy the suggested configuration at
-    `admin/settings/file-system/nginx-accel-redirect` from the
-    textarea to your vhost (server block) configuration.
-    
- 5. Done. 
- 
- 6. Read the discussion below to troubleshoot or gain a deeper
-    understanding of what the module does and what's at stake.
- 
+
+ 2. **drupal 6**: Go to `admin/settings/file-system` and enable
+ **private files**.
+
+ **drupal 7**: Go to `admin/config/media/file-system` and enable
+ **private files**.
+
+ 3. **drupal 6**: Go to `admin/settings/file-system/nginx-accel-redirect` and enable
+ **Files transferred by Nginx using X-Accel-Redirect**.
+
+ **drupal 7**: Go to
+ `admin/config/media/file-system/nginx-accel-redirect` and enable
+ **Files transferred by Nginx using X-Accel-Redirect**.
+
+ 4. **drupal 6**: Copy the suggested configuration at
+ `admin/settings/file-system/nginx-accel-redirect` from the
+ textarea to your vhost (server block) configuration.
+
+ **drupal 7**: Copy the suggested configuration at
+ `admin/config/media/file-system/nginx-accel-redirect` from the
+ textarea to your vhost (server block) configuration.
+
+ 5. Reload the nginx config: `service nginx reload`.
+
+ 6. Done.
+
+ 7. Read the discussion below to troubleshoot or gain a deeper
+ understanding of what the module does and what's at stake.
+
 ## Background
 
 [Lighty X-Sendfile](http://blog.lighttpd.net/articles/2006/07/02/x-sendfile
 "Lighty's life blog post on X-Sendfile")
 was the first implementation of a mechanism for serving private files
 fast. By **private** I mean files that require some type of
-authentication with the backend. 
+authentication with the backend.
 
 The mechanism consists in a **header** &mdash; `X-Sendfile` in
 lighty's case &mdash; that is sent from the backend
@@ -52,14 +66,14 @@ and enabled in the server config, Nginx provides this facility in
 To take advantage of this module you must:
 
  1. Be running Nginx either as the main server or as reverse proxy
-    (handling all static files).
-    
+ (handling all static files).
+
  2. Have **private** files enabled in your filesystem settings page,
-    located at `admin/settings/file-system`.
-    
-In the filesystem settings page you specify the path to the private
-files directory relative to the Drupal web root, i.e., the base
-directory where Drupal is installed.
+ located at `admin/settings/file-system`.
+
+ In the filesystem settings page you specify the path to the private
+ files directory relative to the Drupal web root, i.e., the base
+ directory where Drupal is installed.
 
 Setting to `private` means that the files will be stored in the
 `private` directory of your Drupal install. If installed under
@@ -81,13 +95,13 @@ that you're having the private files directory at `/files/private` the
 suggested config will be:
 
     location ~* /files/private/ {
-      internal;
+    internal;
     }
-    
-Also you must relay the `system/files/` path to Drupal in your Nginx
-config. The module also suggests a configuration stanza for that at
-the settings form at
-`admin/settings/file-system/nginx-accel-redirect`.
+
+    Also you must relay the `system/files/` path to Drupal in your Nginx
+    config. The module also suggests a configuration stanza for that at
+    the settings form at
+    `admin/settings/file-system/nginx-accel-redirect`.
 
 The exact configuration details will vary with your setup but
 if you use a configuration like
@@ -98,8 +112,8 @@ referenced in the groups.drupal.org
 files handling with a location stanza like this:
 
     location ~* /system/files/ {
-      try_files $uri /index.php?q=$uri&$args;
-      log_not_found off;
+    try_files $uri /index.php?q=$uri&$args;
+    log_not_found off;
     }
 
 if you're on **drupal 7**, or on drupal 6 not using anything that uses
@@ -111,7 +125,7 @@ drupal based projects make use of it:
 [ManagingNews](http://managingnews.com). In that case use:
 
     location ~* /system/files/ {
-       try_files $uri @drupal;
+    try_files $uri @drupal;
     }
 
 where `@drupal` is the
@@ -120,57 +134,57 @@ that invokes Drupal `index.php` with the proper query string and arguments.
 
 Note that by default nginx **logs the _missing_ files** as a 404
 error. That's how it's supposed to be. The file doesn't exist and in
-that case relay the request to the named location `@drupal`. If 
+that case relay the request to the named location `@drupal`. If
 you don't want that to happen then add `log_not_found off` to the
 above location stanza. Like this:
 
     location ~* /system/files/ {
-       try_files $uri /index.php?q=$uri&$args;
-       log_not_found off;
+    try_files $uri /index.php?q=$uri&$args;
+    log_not_found off;
     }
-or
-  
+    or
+
     location ~* /system/files/ {
-       try_files $uri @drupal
-       log_not_found off;
-    }    
-depending on the above discussed situation.
+    try_files $uri @drupal
+    log_not_found off;
+    }
+    depending on the above discussed situation.
 
 ## Security considerations
 
 The module generates a status line at the status page
 `/admin/reports/status` stating if the private files directory is
-accessible from the web. 
+accessible from the web.
 
 If you're paranoid then you can **double check** with the following
 commands, using `curl`:
 
     curl -I <URI to private file>
-    
-or alternatively with `wget`
-     
+
+    or alternatively with `wget`
+
     wget -S <URI to private file>
- 
-If you have a private file named `foobar.pdf` in your private file
-directory located at `private`, when issuing:
- 
+
+    If you have a private file named `foobar.pdf` in your private file
+    directory located at `private`, when issuing:
+
     curl -I http://example.com/private/foobar.pdf
 
 you should get a `404 File Not Found` status
 code. `http://example.com` being the base url of your Drupal site.
 If not then check your Nginx config for blocking direct access to the
 private files as described above.
- 
- 
-## Testing of directory protection
+
+
+ ## Testing of directory protection
 
 The testing of the protection is done by touching a file in the
 private file directory with a name like
 `00nginx_accel_redirect4e04b170247834.21219541` where the trailing
 alphanumeric substring is generated by
-[`uniqid`](http://php.net/manual/en/function.uniqid.php). 
- 
-## Acknowledgments
+[`uniqid`](http://php.net/manual/en/function.uniqid.php).
+
+ ## Acknowledgments
 
 The author of the [xsend](http://drupal.org/project/xsend "xsend
 Drupal module") module. There's a lot of stuff stolen from there in
