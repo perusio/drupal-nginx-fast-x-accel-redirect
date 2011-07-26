@@ -17,7 +17,7 @@
  4. **drupal 6**: Copy the suggested configuration at `admin/settings/file-system/nginx-accel-redirect` from the
  textarea to your vhost (server block) configuration. 
  
-   **drupal 7**: Copy the suggested configuration at
+    **drupal 7**: Copy the suggested configuration at
    `admin/config/media/file-system/nginx-accel-redirect` from the textarea to your vhost (server block) configuration.
 
  5. Reload the nginx config: `service nginx reload`.
@@ -144,8 +144,7 @@ drupal based projects make use of it:
     }
 
 Note that by default nginx **logs the _missing_ files** as a 404
-error. That's how it's supposed to be. The file doesn't exist and in
-that case relay the request to the named location `@drupal`. If
+error. That's how it's supposed to be. The file doesn't exist. If
 you don't want that to happen then add `log_not_found off` to the
 above location stanza. Like this:
 
