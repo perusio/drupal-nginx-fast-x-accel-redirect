@@ -6,7 +6,8 @@
 
  2. **drupal 6**: Go to `admin/settings/file-system` and enable **private files**.
 
-    **drupal 7**: Go to `admin/config/media/file-system` and enable **private files**.
+    **drupal 7**: Go to `admin/config/media/file-system` and set the
+    **private files** path.
 
  3. **drupal 6**: Go to
  `admin/settings/file-system/nginx-accel-redirect` and enable **Files transferred by Nginx using X-Accel-Redirect**.
