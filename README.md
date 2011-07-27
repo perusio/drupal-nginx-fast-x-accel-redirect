@@ -8,6 +8,15 @@
 
     **drupal 7**: Go to `admin/config/media/file-system` and set the
     **private files** path.
+    
+    Now a `Private local files served by Drupal` checkbox appears. If
+    you check it, then all files will be private &mdash; although you
+    can make some file field public in the field settings form, and
+    vice-versa, i.e., files are public but some other field can be
+    private.
+    
+    Remember that in Drupal 7, **private** and **public** file serving
+    can **coexist**.
 
  3. **drupal 6**: Go to
  `admin/settings/file-system/nginx-accel-redirect` and enable **Files transferred by Nginx using X-Accel-Redirect**.
